@@ -1,76 +1,106 @@
+/* style.css */
 :root {
   --bg: #111;
-  --fg: #eee;
-  --sub: #555;
+  --fg: #e5e5e5;
+  --sub: #666;
   --correct: #4ade80;
   --wrong: #ef4444;
-  --caret: #fff;
+  --accent: #0ea5e9;
+  --font: "JetBrains Mono", ui-monospace, monospace;
+  --radius: 8px;
+  font-size: 16px;
 }
-
+body.light {
+  --bg: #fafafa;
+  --fg: #111;
+  --sub: #999;
+  --accent: #0ea5e9;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
 body {
-  margin: 0;
-  font-family: "JetBrains Mono", monospace;
   background: var(--bg);
   color: var(--fg);
+  font-family: var(--font);
   display: flex;
   flex-direction: column;
   height: 100vh;
+  transition: background .2s, color .2s;
 }
-
 header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: .5rem 1rem;
-  font-size: .9rem;
+  padding: 1rem 2rem;
+  border-bottom: 1px solid var(--sub);
 }
-
-header h1 { margin: 0; font-size: 1.2rem; font-weight: 600; }
-
+header h1 { font-size: 1.5rem; color: var(--accent); }
 header button {
-  background: none; border: none; color: var(--fg);
-  cursor: pointer; margin-left: 1rem;
+  background: none;
+  border: none;
+  color: var(--fg);
+  font-size: 1rem;
+  cursor: pointer;
 }
-
-#stats {
-  display: flex; justify-content: center; gap: 2rem;
-  font-size: 1.1rem; margin: 1rem 0;
-}
-
-#textBox {
+main {
   flex: 1;
-  font-size: 1.5rem;
-  line-height: 2.2rem;
-  white-space: pre-wrap;
-  outline: none;
-  padding: 1rem 10%;
-  cursor: text;
-  user-select: none;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
-
+#stats {
+  display: flex;
+  gap: 2rem;
+  font-size: 1.25rem;
+  margin-bottom: 1.5rem;
+}
+#textBox {
+  max-width: 800px;
+  width: 100%;
+  font-size: 1.6rem;
+  line-height: 2.5rem;
+  letter-spacing: .05em;
+  user-select: none;
+  cursor: text;
+}
 #textBox span.correct   { color: var(--correct); }
-#textBox span.wrong     { color: var(--wrong); background: rgba(239,68,68,.15); }
+#textBox span.wrong     { color: var(--wrong); background: rgba(239,68,68,.15); border-radius: 2px; }
 #textBox span.current   { position: relative; }
-#textBox span.current::after { /* blinking caret */
+#textBox span.current::after {
   content: "";
   position: absolute;
   left: 0;
   top: 0;
   height: 100%;
   width: 2px;
-  background: var(--caret);
+  background: var(--accent);
   animation: blink 1s infinite;
 }
 @keyframes blink { 50% { opacity: 0; } }
-
-#hiddenInput {
-  position: absolute;
-  top: -9999px;
+#hiddenInput { position: absolute; top: -9999px; }
+canvas#wpmGraph {
+  margin-top: 1.5rem;
+  border: 1px solid var(--sub);
+  border-radius: var(--radius);
 }
-
+.result h2 { margin-bottom: .5rem; color: var(--accent); }
+.result button {
+  margin-top: 1rem;
+  padding: .6rem 1.4rem;
+  border: 1px solid var(--accent);
+  background: transparent;
+  color: var(--accent);
+  border-radius: var(--radius);
+  font-size: 1rem;
+  cursor: pointer;
+}
+.result button:hover {
+  background: var(--accent);
+  color: var(--bg);
+}
 footer {
   text-align: center;
   font-size: .75rem;
   color: var(--sub);
-  padding: .5rem;
+  padding: .75rem;
 }

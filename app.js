@@ -8,45 +8,46 @@ const WORDS = [
 const TEST_SECONDS = 30;
 
 /* ---------- STATE ---------- */
-let testActive = false;
-let testStart  = 0;
-let intervalId = null;
+let testActive  = false;
+let testStart   = 0;
+let intervalId  = null;
+let wordEls     = [];
+let wordIndex   = 0;
+let correctChars = 0;
+let totalChars   = 0;
 
-let wordEls   = [];          // DOM <span> for each word
-let wordIndex = 0;           // which word we’re on
-let charIndex = 0;           // which char inside that word
-let typedHistory = [];       // every character typed
-let errorSet = new Set();    // positions of errors for accuracy
+/* ---------- LIVE DATA FOR GRAPH ---------- */
+const wpmHistory = []; // [[time, wpm], ...]
 
 /* ---------- DOM ---------- */
-const textBox  = document.getElementById('textBox');
-const hidden   = document.getElementById('hiddenInput');
-const wpmEl    = document.getElementById('wpm');
-const accEl    = document.getElementById('acc');
-const timeEl   = document.getElementById('time');
-const themeBtn = document.getElementById('themeBtn');
-const restartBtn = document.getElementById('commandBtn');
+const textBox   = document.getElementById('textBox');
+const hidden    = document.getElementById('hiddenInput');
+const wpmEl     = document.getElementById('wpm');
+const accEl     = document.getElementById('acc');
+const timeEl    = document.getElementById('time');
+const themeBtn  = document.getElementById('themeBtn');
+
+/* ---------- CANVAS ---------- */
+const canvas    = document.createElement('canvas');
+const ctx       = canvas.getContext('2d');
+canvas.id       = 'wpmGraph';
+canvas.style.cssText = 'margin-top:1rem; width:100%; max-width:600px; height:150px;';
+document.querySelector('main').appendChild(canvas);
 
 /* ---------- INIT ---------- */
 generateTest();
 hidden.focus();
+loadTheme();
 
 /* ---------- EVENTS ---------- */
 textBox.addEventListener('click', () => hidden.focus());
-
-hidden.addEventListener('input', e => {
-  const value = hidden.value;
-  handleTyping(value);
-});
-
+hidden.addEventListener('input', handleInput);
 document.addEventListener('keydown', e => {
-  if (e.ctrlKey && e.shiftKey && e.key === 'P') {
+  if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'p') {
     e.preventDefault();
     restartTest();
   }
 });
-
-restartBtn.addEventListener('click', restartTest);
 themeBtn.addEventListener('click', toggleTheme);
 
 /* ---------- FUNCTIONS ---------- */
@@ -66,60 +67,71 @@ function generateTest() {
 
 function resetState() {
   wordIndex = 0;
-  charIndex = 0;
-  typedHistory.length = 0;
-  errorSet.clear();
+  correctChars = 0;
+  totalChars   = 0;
+  wpmHistory.length = 0;
   testActive = false;
   testStart  = 0;
   if (intervalId) clearInterval(intervalId);
   intervalId = null;
   hidden.value = '';
-  updateStats(0);
-  highlight();
+  updateDisplay(0, 0, 0);
+  highlightWord();
+  textBox.classList.remove('finished');
+  canvas.style.display = 'none'; // Hide graph initially
 }
 
-function highlight() {
-  wordEls.forEach((el, i) => {
-    el.classList.remove('current', 'correct', 'wrong');
-    if (i === wordIndex) el.classList.add('current');
-  });
+function highlightWord() {
+  wordEls.forEach((el, i) => el.classList.toggle('current', i === wordIndex));
 }
 
-function handleTyping(value) {
+function handleInput() {
+  if (wordIndex >= wordEls.length) return;
+
+  const value = hidden.value.trimStart();
   const currentWord = wordEls[wordIndex].textContent;
-  typedHistory = value.split('');
-  if (!testActive) startTest();
+  if (!testActive) startTimer();
 
-  // color characters
+  // reset counters for this word
+  let correctThis = 0;
+  let totalThis   = 0;
+
   let html = '';
   for (let i = 0; i < Math.max(currentWord.length, value.length); i++) {
     const typed   = value[i];
     const correct = currentWord[i];
-    if (!typed) {
-      html += `<span>${correct}</span>`;
-    } else if (typed === correct) {
+    totalThis++;
+    if (typed === correct) {
       html += `<span class="correct">${correct}</span>`;
+      correctThis++;
     } else {
-      html += `<span class="wrong">${correct}</span>`;
-      errorSet.add(wordIndex * 1000 + i);
+      html += `<span class="wrong">${correct || ''}</span>`;
     }
   }
   wordEls[wordIndex].innerHTML = html;
 
+  // update global
+  correctChars += correctThis;
+  totalChars   += totalThis;
+
   // advance on space
   if (value.endsWith(' ')) {
     wordIndex++;
-    charIndex = 0;
     hidden.value = '';
-    if (wordIndex >= wordEls.length) return finishTest();
-    highlight();
-    return;
+    if (wordIndex >= wordEls.length) {
+      finishTest();
+      return;
+    }
+    highlightWord();
   }
 
-  updateStats((Date.now() - testStart) / 1000);
+  const elapsed = (Date.now() - testStart) / 1000 || 0;
+  const wpm = Math.round((correctChars / 5) / (elapsed / 60));
+  const acc = totalChars ? Math.round((correctChars / totalChars) * 100) : 100;
+  updateDisplay(wpm, acc, elapsed);
 }
 
-function startTest() {
+function startTimer() {
   testActive = true;
   testStart  = Date.now();
   intervalId = setInterval(() => {
@@ -128,23 +140,75 @@ function startTest() {
       finishTest();
       return;
     }
-    updateStats(elapsed);
-  }, 100);
-}
-
-function updateStats(elapsed) {
-  const typed = typedHistory.filter(c => c !== ' ');
-  const wpm = Math.round((typed.length / 5) / (elapsed / 60));
-  const acc = Math.max(0, 100 - Math.round(errorSet.size / Math.max(typed.length,1) * 100));
-  wpmEl.textContent = `${wpm} wpm`;
-  accEl.textContent = `${acc} %`;
-  timeEl.textContent = `${Math.floor(elapsed)} s`;
+    const wpm = Math.round((correctChars / 5) / (elapsed / 60));
+    const acc = totalChars ? Math.round((correctChars / totalChars) * 100) : 100;
+    wpmHistory.push([elapsed, wpm]);
+    updateDisplay(wpm, acc, elapsed);
+  }, 1000);
 }
 
 function finishTest() {
-  testActive = false;
   clearInterval(intervalId);
-  hidden.blur();
+  testActive = false;
+  const elapsed = (Date.now() - testStart) / 1000 || 1;
+  const wpm = Math.round((correctChars / 5) / (elapsed / 60));
+  const acc = totalChars ? Math.round((correctChars / totalChars) * 100) : 100;
+  updateDisplay(wpm, acc, elapsed);
+  drawGraph(); // Draw graph only after test completion
+  showResult(wpm, acc);
+}
+
+function updateDisplay(wpm, acc, time) {
+  wpmEl.textContent = `${wpm} wpm`;
+  accEl.textContent  = `${acc}%`;
+  timeEl.textContent = `${Math.floor(time)} s`;
+}
+
+function drawGraph() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  const maxWpm = Math.max(50, ...wpmHistory.map(p => p[1])) * 1.1;
+  ctx.strokeStyle = getComputedStyle(document.body).getPropertyValue('--fg');
+  ctx.lineWidth   = 2;
+
+  ctx.beginPath();
+  wpmHistory.forEach(([t, w], i) => {
+    const x = (t / TEST_SECONDS) * canvas.width;
+    const y = canvas.height - (w / maxWpm) * canvas.height;
+    i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+  });
+  ctx.stroke();
+  canvas.style.display = 'block'; // Show graph after test completion
+}
+
+function showResult(wpm, acc) {
+  const remarks = getRemarks(wpm, acc);
+  textBox.innerHTML = `
+    <div class="result">
+      <h2>Test Complete</h2>
+      <p>${wpm} wpm – ${acc}% accuracy</p>
+      <p>${remarks}</p>
+      <button onclick="restartTest()">Test Again</button>
+    </div>
+  `;
+  textBox.classList.add('finished');
+}
+
+function getRemarks(wpm, acc) {
+  if (wpm < 30) {
+    return "Keep practicing! You'll get better.";
+  } else if (wpm < 50) {
+    return "Not bad, but there's room for improvement.";
+  } else if (wpm < 70) {
+    return "Great job! You're above average.";
+  } else if (wpm < 90) {
+    return "Impressive! You're a fast typer.";
+  } else {
+    return "Excellent! You're a typing master.";
+  }
+}
+
+function hideResult() {
+  // handled by generateTest()
 }
 
 function restartTest() {
@@ -152,19 +216,19 @@ function restartTest() {
   hidden.focus();
 }
 
+/* ---------- THEME ---------- */
 function toggleTheme() {
-  const root = document.documentElement.style;
-  const isDark = getComputedStyle(document.documentElement)
-                   .getPropertyValue('--bg') === 'rgb(17, 17, 17)';
-  if (isDark) {
-    root.setProperty('--bg', '#fafafa');
-    root.setProperty('--fg', '#111');
-    root.setProperty('--sub', '#999');
-    themeBtn.textContent = '☀️';
-  } else {
-    root.setProperty('--bg', '#111');
-    root.setProperty('--fg', '#eee');
-    root.setProperty('--sub', '#555');
+  const body = document.body;
+  body.classList.toggle('light');
+  localStorage.setItem('theme', body.classList.contains('light') ? 'light' : 'dark');
+  themeBtn.textContent = body.classList.contains('light') ? '🌙' : '☀️';
+  drawGraph(); // redraw in new theme color
+}
+
+function loadTheme() {
+  const saved = localStorage.getItem('theme');
+  if (saved === 'light') {
+    document.body.classList.add('light');
     themeBtn.textContent = '🌙';
   }
 }

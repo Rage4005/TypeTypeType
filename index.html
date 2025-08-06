@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <title>Monkey Clone</title>
+  <link rel="stylesheet" href="style.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono&display=swap" rel="stylesheet">
+</head>
+<body>
+  <header>
+    <h1>monkeytype</h1>
+    <nav>
+      <button id="themeBtn">🌙</button>
+      <button id="commandBtn" title="Restart: Ctrl+Shift+P">Ctrl+Shift+P</button>
+    </nav>
+  </header>
+
+  <main>
+    <div id="stats">
+      <span id="wpm">0 wpm</span>
+      <span id="acc">100 %</span>
+      <span id="time">0 s</span>
+    </div>
+
+    <!-- where the text appears -->
+    <div id="textBox" tabindex="0"></div>
+
+    <!-- invisible textarea that receives all keystrokes -->
+    <textarea id="hiddenInput" autocomplete="off" autocorrect="off"
+              spellcheck="false"></textarea>
+  </main>
+
+  <footer>
+    <small>support • github • discord • privacy</small>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>

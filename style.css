@@ -1,0 +1,76 @@
+:root {
+  --bg: #111;
+  --fg: #eee;
+  --sub: #555;
+  --correct: #4ade80;
+  --wrong: #ef4444;
+  --caret: #fff;
+}
+
+body {
+  margin: 0;
+  font-family: "JetBrains Mono", monospace;
+  background: var(--bg);
+  color: var(--fg);
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: .5rem 1rem;
+  font-size: .9rem;
+}
+
+header h1 { margin: 0; font-size: 1.2rem; font-weight: 600; }
+
+header button {
+  background: none; border: none; color: var(--fg);
+  cursor: pointer; margin-left: 1rem;
+}
+
+#stats {
+  display: flex; justify-content: center; gap: 2rem;
+  font-size: 1.1rem; margin: 1rem 0;
+}
+
+#textBox {
+  flex: 1;
+  font-size: 1.5rem;
+  line-height: 2.2rem;
+  white-space: pre-wrap;
+  outline: none;
+  padding: 1rem 10%;
+  cursor: text;
+  user-select: none;
+}
+
+#textBox span.correct   { color: var(--correct); }
+#textBox span.wrong     { color: var(--wrong); background: rgba(239,68,68,.15); }
+#textBox span.current   { position: relative; }
+#textBox span.current::after { /* blinking caret */
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 2px;
+  background: var(--caret);
+  animation: blink 1s infinite;
+}
+@keyframes blink { 50% { opacity: 0; } }
+
+#hiddenInput {
+  position: absolute;
+  top: -9999px;
+}
+
+footer {
+  text-align: center;
+  font-size: .75rem;
+  color: var(--sub);
+  padding: .5rem;
+}

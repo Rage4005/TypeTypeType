@@ -35,4 +35,4 @@ A sleek and modern web-based typing speed test application that measures your wo
 1. **Clone the Repository**:
 
    ```bash
-   git clone https://github.com/your-username/typing-speed-test.git
+   git clone https://github.com/Rage4005/typing-speed-test.git

@@ -26,9 +26,10 @@ A sleek and modern web-based typing speed test application that measures your wo
 
 ### Screenshots
 
-![Light Mode](screenshots/light-mode.png)
-![Dark Mode](screenshots/dark-mode.png)
-![Performance Graph](screenshots/performance-graph.png)
+![Light Mode]<img width="1920" height="1080" alt="Screenshot 2025-08-06 191711" src="https://github.com/user-attachments/assets/1ef7b353-ebfc-49eb-abe2-06a4eacdc507" />
+
+![Dark Mode](<img width="1920" height="1080" alt="Screenshot 2025-08-06 191601" src="https://github.com/user-attachments/assets/42982043-288b-4d4f-b964-39d8372e5bd7" />)
+![Performance Graph](<img width="1920" height="1080" alt="Screenshot 2025-08-06 191553" src="https://github.com/user-attachments/assets/f55ff001-2d0a-4c23-8841-64b9234f100e" />)
 
 ### How to Run Locally
 

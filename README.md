@@ -1,29 +1,38 @@
-# Typing Speed Test
+# Typing Speed Test 🚀
 
 ![GitHub repo size](https://img.shields.io/github/repo-size/your-username/typing-speed-test)
 ![GitHub stars](https://img.shields.io/github/stars/your-username/typing-speed-test)
 ![GitHub forks](https://img.shields.io/github/forks/your-username/typing-speed-test)
+![GitHub issues](https://img.shields.io/github/issues/your-username/typing-speed-test)
 
-A web-based typing speed test application that measures words per minute (WPM) and accuracy. The application features a clean, professional UI with light and dark themes, real-time feedback, and a graph that displays your performance over the course of the test.
+## 🌟 Try it out live [here](https://your-username.github.io/typing-speed-test/) 🌟
 
-## Features
+A sleek and modern web-based typing speed test application that measures your words per minute (WPM) and accuracy. Test your typing skills and see how you stack up against the best!
 
-- **Real-time WPM and Accuracy**: See your typing speed and accuracy as you type.
-- **Light/Dark Mode**: Switch between light and dark themes for better readability.
-- **Performance Graph**: A graph that shows your typing speed over the 30-second test period.
-- **Remarks**: Get motivational remarks based on your WPM and accuracy.
-- **Replay**: Easily restart the test with a single click.
+### Features
 
-## How to Use
+- **Real-time Feedback**: Instantly see your typing speed and accuracy as you type.
+- **Light/Dark Mode**: Switch between light and dark themes for a comfortable typing experience.
+- **Performance Graph**: Visualize your typing speed over the 30-second test period with a dynamic graph.
+- **Motivational Remarks**: Receive encouraging remarks based on your WPM and accuracy.
+- **Easy Replay**: Restart the test with a single click to improve your score.
 
-1. Open the `index.html` file in your web browser.
-2. Click anywhere in the text box to start typing.
-3. Complete the paragraph to see your final WPM and accuracy.
-4. Use the "Test Again" button to restart the test.
+### How to Use
 
-## How to Run Locally
+1. **Start Typing**: Open the `index.html` file in your web browser and start typing in the text box.
+2. **Complete the Test**: Finish typing the paragraph to see your final WPM and accuracy.
+3. **Review Your Results**: Analyze your performance with the provided graph and remarks.
+4. **Test Again**: Use the "Test Again" button to restart the test and aim for a higher score.
 
-1. Clone the repository:
+### Screenshots
+
+![Light Mode](screenshots/light-mode.png)
+![Dark Mode](screenshots/dark-mode.png)
+![Performance Graph](screenshots/performance-graph.png)
+
+### How to Run Locally
+
+1. **Clone the Repository**:
 
    ```bash
    git clone https://github.com/your-username/typing-speed-test.git
